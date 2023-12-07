@@ -34,22 +34,14 @@ const elementos = {
       document.querySelector('.boneco-perna-direita'),
     ],
   };
-  
-  const palavras = {
-    facil: [{
-        palavra: 'série',
-        dica: 'Game Of Thrones é a melhor...'
-      },
-      {
-        palavra: 'ímpar',
-        dica: 'Se não é par é...'
-      },
-  
-    ],
-  
+
+// Inicialmente, a constante palavras será vazia
+let palavras = {
+    facil: [],
+    medio: [],
+    dificil: [],
   };
-  
-  
+
   function novoJogo() {
     jogo = {
       dificuldade: undefined,
@@ -194,6 +186,7 @@ const elementos = {
     const palavra = palavras[jogo.dificuldade][i].palavra;
     const dica = palavras[jogo.dificuldade][i].dica;
 
+
     jogo.definirPalavra(palavra, dica);
 
     console.log(jogo.palavra.original);
@@ -215,16 +208,20 @@ const elementos = {
   }
   
   function iniciarJogo(dificuldade) {
-
-    jogo.dificuldade = dificuldade;
+    if (palavras[dificuldade] && palavras[dificuldade].length > 0) {
+      jogo.dificuldade = dificuldade;
   
-    elementos.telaInicial.style.display = 'none';
-    elementos.telaJogo.style.display = 'flex';
-
-    jogo.emAndamento = true;
-
-    sortearPalavra();
-    mostrarPalavra();
+      elementos.telaInicial.style.display = 'none';
+      elementos.telaJogo.style.display = 'flex';
+  
+      jogo.emAndamento = true;
+  
+      sortearPalavra();
+      mostrarPalavra();
+    } else {
+      
+      exibirMensagemErro('Não há palavras cadastradas para a dificuldade escolhida. Cadastre palavras antes de iniciar o jogo.');
+    }
   }
   
 function substituirCaractere(str, indice, novoCaractere) {
@@ -246,7 +243,60 @@ function substituirCaractere(str, indice, novoCaractere) {
   elementos.botoes.cadastrar.addEventListener('click', () => abrirTelaCadastroPalavra());
   elementos.botoes.realizarCadastro.addEventListener('click', () => cadastrarPalavra());
   
-  function voltarInicio() {
+function voltarInicio() {
     elementos.telaInicial.style.display = 'flex';
     elementos.telaCadastro.style.display = 'none';
+}
+
+function abrirTelaCadastroPalavra() {
+    elementos.telaInicial.style.display = 'none';
+    elementos.telaCadastro.style.display = 'flex';
   }
+  
+  function cadastrarPalavra() {
+    const palavraInput = document.querySelector('#palavra');
+    const dicaInput = document.querySelector('#dica');
+    const dificuldadeRadio = document.querySelector('input[name="dificuldade"]:checked');
+  
+    const palavra = palavraInput.value.trim().toLowerCase();
+    const dica = dicaInput.value.trim();
+    const dificuldade = dificuldadeRadio ? dificuldadeRadio.value : '';
+  
+    if (palavra && dica && dificuldade && palavras[dificuldade]) {
+      cadastrarNovaPalavra(palavra, dica, dificuldade);
+      limparCamposCadastro();
+  
+      const continuarCadastro = confirm('Palavra cadastrada com sucesso! Deseja cadastrar mais uma palavra?');
+      if (!continuarCadastro) {
+        voltarInicio();
+      }
+    } else {
+      exibirMensagemErro('Por favor, preencha todos os campos corretamente.');
+    }
+  }
+  
+  function cadastrarNovaPalavra(palavra, dica, dificuldade) {
+    palavras[dificuldade].push({
+      palavra: palavra,
+      dica: dica,
+    });
+  }
+  
+  function limparCamposCadastro() {
+    document.querySelector('#palavra').value = '';
+    document.querySelector('#dica').value = '';
+    document.querySelector('input[name="dificuldade"][value="facil"]').checked = true;
+  }
+  
+  function exibirMensagemErro(mensagem) {
+    // Adapte essa função para exibir a mensagem de erro na interface do usuário.
+    console.error('Erro:', mensagem);
+  }
+  
+  elementos.botoes.cadastrar.addEventListener('click', abrirTelaCadastroPalavra);
+  elementos.botoes.realizarCadastro.addEventListener('click', cadastrarPalavra);
+  elementos.botoes.voltar.addEventListener('click', voltarInicio);
+  
+  
+
+  

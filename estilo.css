@@ -238,7 +238,7 @@ button:hover {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: auto;
 }
 
 .dificuldade-opcoes .opcao {
